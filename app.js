@@ -1,5 +1,7 @@
 const express = require("express");
-const handlebars = require('express-handlebars');
+const _handlebars = require('handlebars'),
+    expressHandlebars = require('express-handlebars'), 
+    {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -33,7 +35,10 @@ const path = require('path');
     app.use(bodyParser.json());
 
     //Handlebars
-    app.engine('handlebars', handlebars({defaultLayout: 'main'}));
+    app.engine('handlebars', expressHandlebars({
+        defaultLayout: 'main',
+        handlebars: allowInsecurePrototypeAccess(_handlebars)
+    }));
     app.set('view engine', 'handlebars');
 
     //Arquivos estáticos
