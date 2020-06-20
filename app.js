@@ -35,7 +35,7 @@ const path = require('path');
     app.use(bodyParser.json());
 
     //Handlebars
-    app.engine('handlebars', expressHandlebars({
+    app.engine('handlebars', expressHandlebars({ //handlebars
         defaultLayout: 'main',
         handlebars: allowInsecurePrototypeAccess(_handlebars)
     }));

@@ -4,7 +4,9 @@ const router = express.Router();
 // Chamada ao mongoose
 const mongoose = require('mongoose');
 require('../models/Categoria');
+require('../models/Postagem');
 const Categoria = mongoose.model('categorias');
+const Postagem = mongoose.model('postagens');
 
 /*
 router.get('/', (rec, res)=>{
@@ -22,7 +24,7 @@ router.get('/posts', (req, res) => {
 });
 
 router.get('/categorias', (req, res) => { // Rota
-    Categoria.find().then((categorias) => {
+    Categoria.find().sort({date: 'desc'}).then((categorias) => {
             res.render('admin/categorias', { categorias: categorias }); // nome da template
         }).catch((err) => {
             req.flash('error_msg', "Erro ao carregar categorias!");
@@ -77,5 +79,95 @@ const verificaErros = (req) => {
 
     return erros;
 }
+
+router.get('/categorias/edit/:id', (req, res)=>{
+    Categoria.findOne({_id: req.params.id})
+        .then((categoria) =>{
+            res.render('admin/editcategorias', {categoria: categoria});
+        })
+        .catch((err) => {
+            req.flash('error_msg', "Esta categoria não existe!");
+            res.redirect('/admin/categorias');
+        });
+});
+
+router.post('/categorias/edit', (req, res) =>{
+    Categoria.findOne({_id: req.body.id})
+        .then((categoria) =>{
+            categoria.nome = req.body.nome;
+            categoria.slug = req.body.slug;
+            categoria.save()
+            .then(()=>{
+                req.flash('success_msg', "Categoria editada com sucesso!");
+                res.redirect('/admin/categorias');
+            })
+            .catch((err) => {
+                req.flash('error_msg', "Erro interno ao salvar categoria!");
+                res.redirect('/admin/categorias');
+            });
+        })
+        .catch((err) => {
+            req.flash('error_msg', "Erro ao aditar categoria!");
+            res.redirect('/admin/categorias');
+        });
+}); 
+
+router.post('/categorias/deletar', (req, res) =>{
+    Categoria.remove({_id: req.body.id})
+        .then(()=>{
+            req.flash('success_msg', "Categoria deletada com sucesso!");
+            res.redirect('/admin/categorias');
+        })
+        .catch((err) => {
+            req.flash('error_msg', "Erro interno deletar categoria!");
+            res.redirect('/admin/categorias');
+        });
+});
+
+/**
+ *  Rotas de postagens
+ */
+
+router.get('/postagens', (req, res) =>{
+    Postagem.find().sort({date: 'desc'}).then((postagens) => {
+        res.render('admin/postagens', { postagens: postagens }); // nome da template
+    }).catch((err) => {
+        req.flash('error_msg', "Erro ao carregar postagens!");
+        res.redirect('/admin');
+    });
+});
+
+router.get('/postagens/add', (req, res) => {
+    Categoria.find()
+        .then((categorias)=>{
+            res.render('admin/addpostagem', {categorias: categorias});
+        });
+});
+
+router.post('/postagens/nova', (req, res) => {
+
+    const novaPostagem = {
+        titulo: req.body.titulo,
+        slug: req.body.slug,
+        descricao: req.body.descricao,
+        conteudo: req.body.conteudo,
+        categoria: req.body.categoria,
+    }
+
+    console.log(req.body);
+
+    new Postagem(novaPostagem)
+        .save()
+        .then(() => {
+            req.flash('success_msg', "Postagem salva com sucesso!");
+            //console.log("Success: "+ success_msg);
+            res.redirect('/admin/postagens');
+        })
+        .catch((err) => {
+            req.flash('error_msg', "Erro ao salvar a postagem, tente novamente!");
+            //console.log('Erro: '+ error_msg);
+            res.redirect('/admin/postagens');
+        });
+});
 
 module.exports = router;
