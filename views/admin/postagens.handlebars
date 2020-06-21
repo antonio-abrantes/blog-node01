@@ -11,16 +11,20 @@
               {{this.conteudo}}
             </p>  
             <small class="badge badge-secondary">{{this.slug}}</small>  <br>
+            <small>Categoria: {{this.categoria.nome}}</small><br>
             <small>Criação: {{this.data}}</small><br>
             <a href="/admin/postagens/edit/{{this._id}}">
                 <button class="btn btn-success mt-2">Editar postagem</button>
             </a>
-            <form action="/admin/postagens/deletar" method="POST">
+            <a href="/admin/postagens/deletar/{{this._id}}">
+                <button class="btn btn-danger mt-2">Deletar postagem</button>
+            </a>
+            {{!-- <form action="/admin/postagens/deletar" method="POST">
                 <div class="form-group">
                     <input type="hidden" name="id" value="{{this._id}}">
                     <button type="submit" class="btn btn-danger mt-4" >Deletar</button>
                 </div>
-            </form>
+            </form> --}}
         </div>
     </div>    
 {{else}}
