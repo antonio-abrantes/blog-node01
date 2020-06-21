@@ -1,0 +1,21 @@
+<h2>Categoria: {{categoria.nome}}</h2>
+<hr>
+{{#each postagens}}
+  <div class="card mt-3">
+      <div class="card-body">
+          <h4>{{this.titulo}}</h4>
+          <p style="text-align: justify;">
+            {{this.descricao}}
+          </p>
+          <a href="/postagem/{{this.slug}}">
+            <button class="btn btn-outline-primary">Leia mais</button>
+          </a> 
+          <hr>
+          <small>Criação: {{this.data}}</small><br>
+          <small>Categoria: {{this.categoria.nome}}</small><br>
+          <small class="badge badge-secondary">{{this.slug}}</small>  <br>
+      </div>
+  </div>     
+{{else}}
+    <h4 class="mt-3">Sem postagens para listar!</h4>
+{{/each}}
