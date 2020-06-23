@@ -128,7 +128,7 @@ app.use('/admin', admin); // Setando um grupo de rotas
 app.use('/usuarios', usuarios); // Setando um grupo de rotas
 
 // Outros
-const PORT = process.env.POST || 8081;
+const PORT = process.env.PORT || 8081;
 app.listen(PORT, ()=>{
     console.log('Server on: http://localhost:'+PORT);
 });
