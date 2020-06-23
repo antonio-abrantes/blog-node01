@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const _handlebars = require('handlebars'),
     expressHandlebars = require('express-handlebars'), 
@@ -26,7 +27,7 @@ const Postagem = mongoose.model('postagens');
 // Configurações
     //Sessão
     app.use(session({
-        secret: "qualquercoisa",
+        secret: process.env.SECRET_SESSION,
         resave: true,
         saveUninitialized: true
     }));
@@ -63,7 +64,9 @@ const Postagem = mongoose.model('postagens');
 
     //Mongoose
     mongoose.Promise = global.Promise;
-    mongoose.connect("mongodb://localhost/blogapp")
+    mongoose.connect(process.env.MONGO_URL, {
+        useNewUrlParser: true,
+      })
     .then(() => {
         console.log('MongoDB conectado com sucesso!');
     })
@@ -76,6 +79,7 @@ app.get('/', (req, res)=>{
     Postagem.find().populate("categoria").sort({date: 'desc'}).then((postagens) => {
         res.render('index', { postagens: postagens }); // nome da template
     }).catch((err) => {
+        console.log(err);
         req.flash('error_msg', "Erro ao carregar postagens!");
         res.redirect('/404');
     });
@@ -124,7 +128,7 @@ app.use('/admin', admin); // Setando um grupo de rotas
 app.use('/usuarios', usuarios); // Setando um grupo de rotas
 
 // Outros
-const PORT = 8081;
+const PORT = process.env.POST || 8081;
 app.listen(PORT, ()=>{
     console.log('Server on: http://localhost:'+PORT);
 });
