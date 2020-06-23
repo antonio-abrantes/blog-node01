@@ -9,13 +9,19 @@ const flash = require('connect-flash');
 
 const app = express();
 const admin = require('./routes/admin');
+const usuarios = require('./routes/usuario');
 const path = require('path');
+
+// Autenticação
+const passport = require('passport');
+require("./config/auth")(passport);
 
 // Models
 require('./models/Categoria');
 require('./models/Postagem');
 const Categoria = mongoose.model('categorias');
 const Postagem = mongoose.model('postagens');
+
 
 // Configurações
     //Sessão
@@ -25,6 +31,10 @@ const Postagem = mongoose.model('postagens');
         saveUninitialized: true
     }));
 
+    // Inicilização do Passport -> Importante que siga esta ordem abaixo da session
+    app.use(passport.initialize());
+    app.use(passport.session());
+
     //Flass -> Tem que ficar abaixo da sessão
     app.use(flash());
 
@@ -32,7 +42,8 @@ const Postagem = mongoose.model('postagens');
     app.use((req, res, next)=>{
         res.locals.success_msg = req.flash('success_msg');
         res.locals.error_msg = req.flash('error_msg');
-        
+        res.locals.error = req.flash("error");
+        res.locals.user = req.user || null;
         next();
     });
 
@@ -110,6 +121,7 @@ app.get('/404', (req, res)=>{
 });
 
 app.use('/admin', admin); // Setando um grupo de rotas
+app.use('/usuarios', usuarios); // Setando um grupo de rotas
 
 // Outros
 const PORT = 8081;
